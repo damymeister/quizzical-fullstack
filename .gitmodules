@@ -1,0 +1,3 @@
+[submodule "quizz2"]
+    path = quizz2
+    url = https://github.com/damymeister/quizzical.git
