@@ -1,7 +1,8 @@
 const router = require("express").Router()
 const { User, validate } = require("../Models/User")
 const bcrypt = require("bcrypt")
-
+const bestAvgOutcome  = require("../Models/bestAvgOutcome")
+const Result  = require("../Models/Result")
 router.post("/", async (req, res) => {
     try {
             const { error } = validate(req.body)
@@ -91,8 +92,9 @@ router.delete("/:userId", async (req, res) => {
           if (!user) {
             return res.status(404).send({ message: "User not found" });
           }
-      
-          await User.deleteOne({ _id: userId })
+          await bestAvgOutcome.deleteOne({userId: userId});
+          await Result.deleteMany({userId: userId });
+          await User.deleteOne({ _id: userId });
       
           res.status(200).send({ message: "User deleted successfully" });
         } catch (error) {

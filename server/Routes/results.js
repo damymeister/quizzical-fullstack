@@ -7,10 +7,9 @@ router.post("/", async (req, res) => {
      {
         const userId = req.body.userId;
         const user = await Result.findOne({ userId }).sort({ counter: -1 }) .exec();
-
     if (user) {
         if(user.counter >=10){
-            const oldestResult = await Result.findOne().sort({ CurrentDate: 1 }).exec();
+          const oldestResult = await Result.findOne({ userId }).sort({ CurrentDate: 1 }).exec();
             if (oldestResult) {
               const updatedResult = await Result.updateOne(
                 { _id: oldestResult._id },
@@ -84,19 +83,24 @@ router.get("/", async (req, res) => {
     try {
       const userId = req.params.userId;
       const user = await User.findOne({ _id: userId });
-      const userResults = await Result.find({ userId: user.userId });
+      const userResults = await Result.find({ userId: userId });
       const bestavg = await bestAvgOutcome.findOne({ userId: userId });
       if (!user || !bestAvgOutcome) {
         return res.status(404).send({ message: "Data not found" });
       }
+      const results = userResults.map((data) =>({
+       outcome: data.outcome,
+       counter: data.counter,
+       date: data.CurrentDate
+      })
+      )
       const userdata = {
         username: user.name,
         email: user.email,
-        //tutajdodac kod obslugujacy userresult
+        results:results,
         bestavg : bestavg.bestAvgOutcome
       }
       res.status(200).send(userdata);
-      console.log(userdata)
     } catch (error) {
       res.status(500).send({ message: "Internal Server Error" });
     }
